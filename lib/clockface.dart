@@ -16,8 +16,6 @@ class FlamencoClock extends StatefulWidget {
 }
 
 class _FlamencoClockState extends State<FlamencoClock> {
-  final Now now = Now(Intl.DateFormat.HOUR24_MINUTE_SECOND);
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -45,7 +43,9 @@ class _FlamencoClockState extends State<FlamencoClock> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 40, horizontal: 50),
-                      child: SweetText(now.notifiers),
+                      child: SweetText(Now(Intl.DateFormat.HOUR24_MINUTE_SECOND,
+                              Duration(milliseconds: 490))
+                          .notifiers),
                     ),
                     Consumer<ClockModel>(
                         builder: (context, model, child) =>

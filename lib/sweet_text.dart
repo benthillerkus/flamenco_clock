@@ -5,6 +5,7 @@ import 'package:flamenco_clock/shadow_tween.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'now.dart';
 
 extension on Random {
   Color nextColor() => HSLColor.lerp(HSLColor.fromAHSL(1, 0, .5, .8),
@@ -13,7 +14,7 @@ extension on Random {
 }
 
 class SweetText extends StatelessWidget {
-  final Iterable<ValueNotifier<String>> notifiers;
+  final Iterable<ClockLetterNotifier> notifiers;
 
   SweetText(this.notifiers);
 
@@ -29,7 +30,7 @@ class SweetText extends StatelessWidget {
 }
 
 class SweetLetter extends StatefulWidget {
-  final ValueNotifier<String> notifier;
+  final ClockLetterNotifier notifier;
 
   SweetLetter(this.notifier);
 
@@ -39,7 +40,7 @@ class SweetLetter extends StatefulWidget {
 }
 
 class _SweetLetterState2 extends State<SweetLetter> {
-  static final a = const <Shadow>[
+  static var begin = const <Shadow>[
     Shadow(
         blurRadius: 3,
         offset: Offset(0, 3),
@@ -70,19 +71,10 @@ class _SweetLetterState2 extends State<SweetLetter> {
         color: Color.fromRGBO(78, 63, 93, .7996)),
     Shadow(blurRadius: 167, offset: Offset(0, 173), color: Color(0xFF4E3F5D)),
   ];
-  static final b = const <Shadow>[
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color(0x1A4E3F5D)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color(0x334E3F5D)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color(0x484E3F5D)),
+  static var end = const <Shadow>[
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x1A4E3F5D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x334E3F5D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x484E3F5D)),
     Shadow(
         blurRadius: 0,
         offset: Offset(0, 0),
@@ -101,25 +93,29 @@ class _SweetLetterState2 extends State<SweetLetter> {
         color: Color.fromRGBO(78, 63, 93, .7996)),
     Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0xFF4E3F5D)),
   ];
-  
-  static final shadows = ShadowListTween(begin: b , end: a);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Center(
-          child: TweenAnimationBuilder<List<Shadow>>(
-        tween: shadows,
-        duration: const Duration(milliseconds: 750),
-        curve: const MirrorCurve(Curves.easeIn),
-        builder: (context, shadows, child) {
-          return Text(widget.notifier.value,
-              style: TextStyle(
-                  color: const Color(0xFFE5CAE9),
-                  fontFamily: 'Flamenco',
-                  fontSize: 150,
-                  shadows: shadows
-                  ));
+          child: ValueListenableBuilder<String>(
+        valueListenable: widget.notifier,
+        builder: (context, value, child) {
+          bool out = !widget.notifier.isBetweenUpdates;
+          return TweenAnimationBuilder<List<Shadow>>(
+            tween: ShadowListTween(begin: out ? begin : end, end: out ? end : begin),
+            duration: widget.notifier.preUpdateNotificationOffset,
+            // curve: const MirrorCurve(Curves.easeIn),
+            curve: Curves.easeIn,
+            builder: (context, shadows, child) {
+              return Text(value,
+                  style: TextStyle(
+                      color: const Color(0xFFE5CAE9),
+                      fontFamily: 'Flamenco',
+                      fontSize: 150,
+                      shadows: shadows));
+            },
+          );
         },
       )),
     );
