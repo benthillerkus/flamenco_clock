@@ -1,10 +1,10 @@
-import 'package:flamenco_clock/now.dart';
-import 'package:flamenco_clock/sweet_text.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart' as Intl;
+
+import 'now.dart';
+import 'sweet_text.dart';
 
 class FlamencoClock extends StatefulWidget {
   final ClockModel model;
@@ -16,6 +16,15 @@ class FlamencoClock extends StatefulWidget {
 }
 
 class _FlamencoClockState extends State<FlamencoClock> {
+
+  Now now = Now();
+
+  @override
+  void dispose() {
+    now.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -43,9 +52,7 @@ class _FlamencoClockState extends State<FlamencoClock> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 40, horizontal: 50),
-                      child: SweetText(Now(Intl.DateFormat.HOUR24_MINUTE_SECOND,
-                              Duration(milliseconds: 490))
-                          .notifiers),
+                      child: SweetText(now),
                     ),
                     Consumer<ClockModel>(
                         builder: (context, model, child) =>
