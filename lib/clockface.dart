@@ -19,12 +19,6 @@ class _FlamencoClockState extends State<FlamencoClock> {
   Now now = Now();
 
   @override
-  void dispose() {
-    now.deactivate();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
     SystemChrome.setPreferredOrientations(
@@ -67,5 +61,11 @@ class _FlamencoClockState extends State<FlamencoClock> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    now.deactivate();
+    super.dispose();
   }
 }

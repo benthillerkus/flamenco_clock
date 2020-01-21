@@ -5,15 +5,15 @@ import 'package:flutter/widgets.dart';
 
 import 'shadow_tween.dart';
 
-extension on Random {
-  Color nextColor() => HSLColor.lerp(HSLColor.fromAHSL(1, 0, .5, .8),
-          HSLColor.fromAHSL(1, 360, .5, .5), nextDouble())
-      .toColor();
-}
+class SweetLetter extends StatefulWidget {
+  final int index;
+  final String Function(int index) valueCallback;
+  final Sequence controller;
 
-abstract class SweetTextManager {
-  List<Sequence> controllers;
-  String Function(int index) getValueOfLetter;
+  SweetLetter(this.index, this.valueCallback, this.controller);
+
+  @override
+  _SweetLetterState createState() => _SweetLetterState();
 }
 
 class SweetText extends StatelessWidget {
@@ -37,15 +37,9 @@ class SweetText extends StatelessWidget {
   }
 }
 
-class SweetLetter extends StatefulWidget {
-  final int index;
-  final String Function(int index) valueCallback;
-  final Sequence controller;
-
-  SweetLetter(this.index, this.valueCallback, this.controller);
-
-  @override
-  _SweetLetterState createState() => _SweetLetterState();
+abstract class SweetTextManager {
+  List<Sequence> controllers;
+  String Function(int index) getValueOfLetter;
 }
 
 class _SweetLetterState extends State<SweetLetter> {
@@ -91,50 +85,14 @@ class _SweetLetterState extends State<SweetLetter> {
     Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x904E358D)),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    transitionIn();
-    widget.controller.add(Event(-transitionLength, transitionOut));
-    widget.controller.add(Event(transitionIn));
-    widget.controller.add(Event(
-        Duration(milliseconds: -200),
-        () => setState(() {
-              _opacity = 0.0;
-            })));
-  }
-
-  @override
-  void dispose() {
-    widget.controller.deactivate();
-    super.dispose();
-  }
-
   var _begin = noShadow;
+
   var _end = fullShadow;
+
   double _opacity = 1.0;
   double _top = 0.0;
   String _value;
   final Duration transitionLength = const Duration(milliseconds: 330);
-
-  void transitionIn() {
-    setState(() {
-      _value = widget.valueCallback(widget.index);
-      _begin = noShadow;
-      _end = fullShadow;
-      _opacity = 1.0;
-      _top = 0.0;
-    });
-  }
-
-  void transitionOut() {
-    setState(() {
-      _begin = fullShadow;
-      _end = noShadow;
-      _top = 5.0;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -164,4 +122,46 @@ class _SweetLetterState extends State<SweetLetter> {
       ),
     ));
   }
+  @override
+  void dispose() {
+    widget.controller.deactivate();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    transitionIn();
+    widget.controller.add(Event(-transitionLength, transitionOut));
+    widget.controller.add(Event(transitionIn));
+    widget.controller.add(Event(
+        Duration(milliseconds: -200),
+        () => setState(() {
+              _opacity = 0.0;
+            })));
+  }
+
+  void transitionIn() {
+    setState(() {
+      _value = widget.valueCallback(widget.index);
+      _begin = noShadow;
+      _end = fullShadow;
+      _opacity = 1.0;
+      _top = 0.0;
+    });
+  }
+
+  void transitionOut() {
+    setState(() {
+      _begin = fullShadow;
+      _end = noShadow;
+      _top = 5.0;
+    });
+  }
+}
+
+extension on Random {
+  Color nextColor() => HSLColor.lerp(HSLColor.fromAHSL(1, 0, .5, .8),
+          HSLColor.fromAHSL(1, 360, .5, .5), nextDouble())
+      .toColor();
 }
