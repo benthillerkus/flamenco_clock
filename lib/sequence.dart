@@ -7,6 +7,7 @@ typedef VoidCallback = void Function();
 /// Basically a Timer that hasn't started yet.
 class Event implements Comparable {
   Duration _offset;
+
   /// Callback that should be fired when this [Event] happens.
   VoidCallback callback;
 
@@ -55,14 +56,14 @@ class Event implements Comparable {
 
 /// TODO write tests lol
 /// TODO Make Events mutable again and have the Sequence update on change.
-///   this might actually work though haha
+///	 this might actually work though haha
 /// TODO Use proper asynchronous programming for the Sequence.
 /// TODO Unfuck the code
 /// TODO Improve usability & add features such as
-///   muting callbacks
-///   reversing playback
-///   maybe add debugging functionality that says which events are currently being fired?
-///     I guess that means Streams?
+///	 muting callbacks
+///	 reversing playback
+///	 maybe add debugging functionality that says which events are currently being fired?
+///		 I guess that means Streams?
 
 /// A list of [Event]s relative to a specific point in time.
 /// (Let's call it [Point 0])
@@ -74,6 +75,7 @@ class Sequence {
   Duration _startOffset;
 
   Duration _length;
+
   /// This [Timer] is responsible for repeating the sequence.
   Timer _driver = null;
 
@@ -96,6 +98,7 @@ class Sequence {
 
   /// Returns whether or not a sequence is currently playing.
   bool get isRunning => _isRunning;
+
   /// The length of one run through the [Sequence].
   Duration get length => _length;
 
@@ -213,7 +216,7 @@ class Sequence {
   /// that will fire each [Event] in [_events].
   ///
   /// [startAtIndex] can be used to start the [Sequence]
-  ///  at a specific [Event] rather than the first [Event].
+  ///	at a specific [Event] rather than the first [Event].
   /// Since the first [Event] will start immediately,
   /// it is being filtered out and started seperately.
   void _startSequence(Timer t, [int startAtIndex = 0]) {

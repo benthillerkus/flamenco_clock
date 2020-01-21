@@ -122,6 +122,7 @@ class _SweetLetterState extends State<SweetLetter> {
       ),
     ));
   }
+
   @override
   void dispose() {
     widget.controller.deactivate();

@@ -48,7 +48,7 @@ class Now implements SweetTextManager {
       DateFormat.Hms().format(date).split('');
 }
 
-extension <T> on List<T> {
+extension<T> on List<T> {
   /// Generates a [List<int>] of every index where the content
   /// of both [List]s is not the same.
   Iterable<int> indeciesOfDifferences(List<T> other) sync* {
