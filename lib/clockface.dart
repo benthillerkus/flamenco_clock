@@ -16,12 +16,11 @@ class FlamencoClock extends StatefulWidget {
 }
 
 class _FlamencoClockState extends State<FlamencoClock> {
-
   Now now = Now();
 
   @override
   void dispose() {
-    now.cancel();
+    now.deactivate();
     super.dispose();
   }
 
@@ -49,14 +48,19 @@ class _FlamencoClockState extends State<FlamencoClock> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 40, horizontal: 50),
-                      child: SweetText(now),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 40, horizontal: 50),
+                        child: SweetText(now),
+                      ),
                     ),
-                    Consumer<ClockModel>(
-                        builder: (context, model, child) =>
-                            Text(model.weatherString))
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 70),
+                      child: Consumer<ClockModel>(
+                          builder: (context, model, child) =>
+                              Text(model.weatherString)),
+                    ),
                   ],
                 )),
           ),

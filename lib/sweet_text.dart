@@ -31,7 +31,7 @@ class SweetText extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
-      // children: [for (var controller in manager.controllers) SweetLetter(, manager.getValueOfLetter, controller)]);
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: letters,
     );
   }
@@ -81,51 +81,49 @@ class _SweetLetterState extends State<SweetLetter> {
     Shadow(blurRadius: 167, offset: Offset(0, 173), color: Color(0xFF4E3F5D)),
   ];
   static var noShadow = const <Shadow>[
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x1A4E3F5D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x334E3F5D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x484E3F5D)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color.fromRGBO(78, 63, 93, .5562)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color.fromRGBO(78, 63, 93, .6309)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color.fromRGBO(78, 63, 93, .705)),
-    Shadow(
-        blurRadius: 0,
-        offset: Offset(0, 0),
-        color: Color.fromRGBO(78, 63, 93, .7996)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0xFF4E3F5D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x104E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x244E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x354E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x404E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x504E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x604E3F7D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x704E3E7F)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x904E358D)),
   ];
 
   @override
   void initState() {
     super.initState();
-    widget.controller.add(Event(Duration(milliseconds: -500), transitionOut));
-    widget.controller.add(Event(Duration(milliseconds: 0), transitionIn));
-    widget.controller.add(Event(Duration(milliseconds: -100), () => setState(() {_opacity = 0;})));
+    transitionIn();
+    widget.controller.add(Event(-transitionLength, transitionOut));
+    widget.controller.add(Event(transitionIn));
+    widget.controller.add(Event(
+        Duration(milliseconds: -200),
+        () => setState(() {
+              _opacity = 0.0;
+            })));
   }
 
   @override
   void dispose() {
-    widget.controller.destruct();
+    widget.controller.deactivate();
     super.dispose();
   }
 
   var _begin = noShadow;
   var _end = fullShadow;
-  var _opacity = 1.0;
+  double _opacity = 1.0;
+  double _top = 0.0;
+  String _value;
+  final Duration transitionLength = const Duration(milliseconds: 330);
 
   void transitionIn() {
     setState(() {
+      _value = widget.valueCallback(widget.index);
       _begin = noShadow;
       _end = fullShadow;
       _opacity = 1.0;
+      _top = 0.0;
     });
   }
 
@@ -133,29 +131,36 @@ class _SweetLetterState extends State<SweetLetter> {
     setState(() {
       _begin = fullShadow;
       _end = noShadow;
+      _top = 5.0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Center(
-      child: TweenAnimationBuilder<List<Shadow>>(
-        tween: ShadowListTween(begin: _begin, end: _end),
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeIn,
-        builder: (context, shadows, child) {
-          return AnimatedOpacity(
-            duration: const Duration(milliseconds: 150),
-            opacity: _opacity,
-            child: Text(widget.valueCallback(widget.index),
-                style: TextStyle(
-                    color: const Color(0xFFE5CAE9),
-                    fontFamily: 'Flamenco',
-                    fontSize: 150,
-                    shadows: shadows)),
-          );
-        },
+        child: AnimatedContainer(
+      duration: transitionLength,
+      curve: Curves.bounceIn,
+      padding: EdgeInsets.only(top: _top),
+      child: Center(
+        child: TweenAnimationBuilder<List<Shadow>>(
+          tween: ShadowListTween(begin: _begin, end: _end),
+          duration: transitionLength,
+          curve: Curves.easeIn,
+          builder: (context, shadows, child) {
+            return AnimatedOpacity(
+              duration: const Duration(milliseconds: 180),
+              opacity: _opacity,
+              curve: Curves.ease,
+              child: Text(_value,
+                  style: TextStyle(
+                      color: const Color(0xFFE5CAE9),
+                      fontFamily: 'Flamenco',
+                      fontSize: 150,
+                      shadows: shadows)),
+            );
+          },
+        ),
       ),
     ));
   }

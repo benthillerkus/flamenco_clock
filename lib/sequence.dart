@@ -52,7 +52,7 @@ class Sequence {
   Sequence(List<Event> events) {
     _events.addAll(events);
     events.forEach((event) => event.registerSequence(this));
-    updateTimings();
+    _updateTimings();
   }
 
   /// Create an empty [Sequence].
@@ -62,20 +62,20 @@ class Sequence {
   void add(Event event) {
     _events.add(event);
     event.registerSequence(this);
-    updateTimings();
+    _updateTimings();
   }
 
   /// Removes a single [Event] from the [Sequence].
   void remove(Event event) {
     _events.remove(event);
     event.unregisterSequence(this);
-    updateTimings();
+    _updateTimings();
   }
 
   /// Recalculates the in- and outpoints.
   ///
   /// There is no need for you to touch this.
-  void updateTimings() {
+  void _updateTimings() {
     _events.sort();
     _startOffset = -_events.first.offset;
     _length = _events.last.offset + _startOffset;
@@ -94,7 +94,7 @@ class Sequence {
   ///
   /// Cancels any ongoing [Timer]s,
   /// stops the [Sequence] and removes all [Event]s.
-  void destruct() {
+  void deactivate() {
     cancel();
     var tempCopies = _events.toList(growable: false);
     _events.clear();
@@ -113,10 +113,9 @@ class Sequence {
   /// Starts the [Sequence],
   ///
   /// so that at [startIn] an [Event] with 0 [offset] would be played.
-  /// Returns [false] if the input is invalid.
   /// A negative [startIn] means that [Point 0] has already passed.
-  bool call({@required Duration startIn, Duration period = const Duration()}) {
-    if (isRunning) return false;
+  call({@required Duration startIn, Duration period = const Duration()}) {
+    if (isRunning) return;
 
     var isPeriodic = period != const Duration();
 
@@ -128,9 +127,8 @@ class Sequence {
     }
     // However having [startIn]s that are farer than one [period] away
     // in the past aren't supported.
-    if (nextEventIndex == -1) return false;
+    if (nextEventIndex == -1) return;
 
-    _isRunning = true;
     // Start a periodic Timer in [startIn]
     if (nextEventIndex == 0) {
       // Wait for the Sequence to start
@@ -140,10 +138,8 @@ class Sequence {
         // Play the Sequence
         if (isPeriodic) {
           _driver = Timer.periodic(period, _startSequence);
-        } else {
-          _isRunning = false;
+          _isRunning = true;
         }
-        return true;
       });
     } else {
       // Wait for the [nextEvent] to come.
@@ -157,14 +153,11 @@ class Sequence {
           // Start looping.
           if (isPeriodic) {
             _driver = Timer.periodic(period, _startSequence);
-          } else {
-            _isRunning = false;
-          }
+            _isRunning = true;
+          } 
         });
       });
-      return true;
-    }
-    return false; // Shut up, Dart Analyzer
+    } // Shut up, Dart Analyzer
   }
 
   /// Cleanup by removing inactive [Timer]s from [_timers].
@@ -212,7 +205,7 @@ class Event implements Comparable {
   Duration get offset => _offset;
   set offset(Duration offset) {
     _offset = offset;
-    registeredIn.forEach((sequence) => sequence.updateTimings());
+    registeredIn.forEach((sequence) => sequence._updateTimings());
   }
 
   Duration _offset;
@@ -239,7 +232,9 @@ class Event implements Comparable {
       {if (!sequence.events.contains(this)) _registeredIn.remove(sequence)};
 
   /// Create an [Event] offset by [offset] from [Point 0].
-  Event(this._offset, this.callback);
+  Event([offset = const Duration(), this.callback]) {
+    _offset = offset;
+  }
 
   /// Returns a new [Timer] that will fire [callback] in [offset].
   ///
