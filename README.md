@@ -1,6 +1,9 @@
 # flamenco_clock
 
-A new Flutter project.
+This was made in January 2020 for the Flutter clock contest.
+
+![img](screenshot-running.png)
+
 
 ## Getting Started
 
