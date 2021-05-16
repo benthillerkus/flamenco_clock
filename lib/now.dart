@@ -32,7 +32,7 @@ class Now implements SweetTextManager {
   /// Run every Sequence that will have it's associated value / char changed.
   void _update() {
     var now = DateTime.now();
-    var soon = now.add(_timeStep + Duration(milliseconds: 100));
+    var soon = now.add(_timeStep + Duration(milliseconds: 200));
     var nowFormatted = formatToList(now);
     var soonFormatted = formatToList(soon);
 

@@ -45,44 +45,44 @@ abstract class SweetTextManager {
 class _SweetLetterState extends State<SweetLetter> {
   static var fullShadow = const <Shadow>[
     Shadow(
-        blurRadius: 3,
-        offset: Offset(0, 3),
+        blurRadius: 2,
+        offset: Offset(0, 2),
+        color: Color.fromRGBO(78, 63, 93, .06)),
+    Shadow(
+        blurRadius: 6,
+        offset: Offset(0, 5),
         color: Color.fromRGBO(78, 63, 93, .1)),
     Shadow(
-        blurRadius: 7,
-        offset: Offset(0, 4),
+        blurRadius: 10,
+        offset: Offset(0, 9),
+        color: Color.fromRGBO(78, 63, 93, .13)),
+    Shadow(
+        blurRadius: 16,
+        offset: Offset(0, 12),
+        color: Color.fromRGBO(78, 63, 93, .16)),
+    Shadow(
+        blurRadius: 27,
+        offset: Offset(0, 25),
         color: Color.fromRGBO(78, 63, 93, .2)),
     Shadow(
-        blurRadius: 14,
-        offset: Offset(0, 7),
-        color: Color.fromRGBO(78, 63, 93, .28)),
+        blurRadius: 44,
+        offset: Offset(0, 30),
+        color: Color.fromRGBO(78, 63, 93, .25)),
     Shadow(
-        blurRadius: 18.19,
-        offset: Offset(0, 15.96),
-        color: Color.fromRGBO(78, 63, 93, .5562)),
-    Shadow(
-        blurRadius: 30.5,
-        offset: Offset(0, 30.8),
-        color: Color.fromRGBO(78, 63, 93, .6309)),
-    Shadow(
-        blurRadius: 51.94,
-        offset: Offset(0, 53.93),
-        color: Color.fromRGBO(78, 63, 93, .705)),
-    Shadow(
-        blurRadius: 91.73,
-        offset: Offset(0, 91.78),
-        color: Color.fromRGBO(78, 63, 93, .7996)),
-    Shadow(blurRadius: 167, offset: Offset(0, 173), color: Color(0xFF4E3F5D)),
+        blurRadius: 72,
+        offset: Offset(0, 60),
+        color: Color.fromRGBO(78, 63, 93, .35)),
+    Shadow(blurRadius: 140, offset: Offset(0, 120), color: Color.fromRGBO(0, 0, 0, .41)),
   ];
   static var noShadow = const <Shadow>[
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x104E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x244E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x354E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x404E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x504E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x604E3F7D)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x704E3E7F)),
-    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x904E358D)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x104E3FAD)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x244E3FBD)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x354E3FCD)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x404E3FDD)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x504E3FED)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x604E3FFD)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x704E3E1F)),
+    Shadow(blurRadius: 0, offset: Offset(0, 0), color: Color(0x904E352D)),
   ];
 
   var _begin = noShadow;
@@ -98,7 +98,7 @@ class _SweetLetterState extends State<SweetLetter> {
     return Expanded(
         child: AnimatedContainer(
       duration: transitionLength,
-      curve: Curves.bounceIn,
+      curve: Curves.linearToEaseOut,
       padding: EdgeInsets.only(top: _top),
       child: Center(
         child: TweenAnimationBuilder<List<Shadow>>(
@@ -107,12 +107,12 @@ class _SweetLetterState extends State<SweetLetter> {
           curve: Curves.easeIn,
           builder: (context, shadows, child) {
             return AnimatedOpacity(
-              duration: const Duration(milliseconds: 180),
+              duration: transitionLength * .4,
               opacity: _opacity,
-              curve: Curves.ease,
+              curve: Curves.linearToEaseOut,
               child: Text(_value,
                   style: TextStyle(
-                      color: const Color(0xFFE5CAE9),
+                      color: const Color.fromRGBO(255, 230, 255, 1),
                       fontFamily: 'Flamenco',
                       fontSize: 150,
                       shadows: shadows)),
@@ -134,7 +134,7 @@ class _SweetLetterState extends State<SweetLetter> {
     super.initState();
     transitionIn();
     widget.controller.add(Event(-transitionLength, transitionOut));
-    widget.controller.add(Event(transitionIn));
+    widget.controller.add(Event(Duration(), transitionIn));
     widget.controller.add(Event(
         Duration(milliseconds: -200),
         () => setState(() {
@@ -156,7 +156,7 @@ class _SweetLetterState extends State<SweetLetter> {
     setState(() {
       _begin = fullShadow;
       _end = noShadow;
-      _top = 5.0;
+      _top = 7.0;
     });
   }
 }
